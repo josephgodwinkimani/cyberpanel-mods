@@ -40,7 +40,7 @@ then
 
 elif [  $CURRENT = $c  ];
 then
-      cp ioncube/ioncube_loader_lin_7.4.so /usr/local/lsws/lsphp74/lib64/php/20190902/
+      cp ioncube/ioncube_loader_lin_7.4.so /usr/local/lsws/lsphp74/lib/php/20190902/
       echo "extension=ioncube_loader_lin_7.4.so" >> /usr/local/lsws/lsphp74/etc/php/7.4/mods-available/01-ioncube.ini     
       systemctl restart lsws
       echo "ioncube_loader_7.4 sucessfully installed"
