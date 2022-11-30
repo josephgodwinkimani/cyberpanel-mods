@@ -5,7 +5,6 @@
 a=7.2
 b=7.3
 c=7.4
-d=8.0
 e=8.1
 
 cd /usr/local/
@@ -46,12 +45,6 @@ then
       echo "ioncube_loader_7.4 sucessfully installed"
 
 elif [  $CURRENT = $d  ];
-then
-      cp ioncube/ioncube_loader_lin_8.0.so /usr/local/lsws/lsphp80/lib/php/20200930/
-      echo "extension=ioncube_loader_lin_8.0.so" >> /usr/local/lsws/lsphp80/etc/php/8.0/mods-available/01-ioncube.ini     
-      systemctl restart lsws
-      echo "ioncube_loader_8.0 sucessfully installed"
-elif [  $CURRENT = $e  ];
 then
       cp ioncube/ioncube_loader_lin_8.1.so /usr/local/lsws/lsphp81/lib/php/20210902/
       echo "extension=ioncube_loader_lin_8.1.so" >> /usr/local/lsws/lsphp81/etc/php/8.1/mods-available/01-ioncube.ini     
