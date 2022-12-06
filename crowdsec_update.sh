@@ -8,4 +8,5 @@ sudo cscli scenarios upgrade --all --force --trace
 sudo cscli parsers upgrade --all --force --trace
 sudo cscli collections upgrade --all --force --trace
 sudo cscli postoverflows upgrade --all --force --trace
+sudo systemctl restart crowdsec
 sudo cscli metrics
