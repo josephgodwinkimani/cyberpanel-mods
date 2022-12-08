@@ -26,28 +26,28 @@ echo "current php version of this system PHP-$CURRENT"
 if [  $CURRENT = $a ];
 then
       cp ioncube/ioncube_loader_lin_7.2.so /usr/local/lsws/lsphp72/lib/php/20170718/
-      echo "extension=ioncube_loader_lin_7.2.so" >> /usr/local/lsws/lsphp72/etc/php/7.2/mods-available/01-ioncube.ini     
+      echo "zend_extension=ioncube_loader_lin_7.2.so" >> /usr/local/lsws/lsphp72/etc/php/7.2/mods-available/01-ioncube.ini     
       systemctl restart lsws
       echo "ioncube_loader_7.2 sucessfully installed"
 
 elif [  $CURRENT = $b  ];
 then
       cp ioncube/ioncube_loader_lin_7.3.so /usr/local/lsws/lsphp73/lib/php/20180731/
-      echo "extension=ioncube_loader_lin_7.2.so" >> /usr/local/lsws/lsphp73/etc/php/7.3/mods-available/01-ioncube.ini     
+      echo "zend_extension=ioncube_loader_lin_7.2.so" >> /usr/local/lsws/lsphp73/etc/php/7.3/mods-available/01-ioncube.ini     
       systemctl restart lsws
       echo "ioncube_loader_7.3 sucessfully installed"
 
 elif [  $CURRENT = $c  ];
 then
       cp ioncube/ioncube_loader_lin_7.4.so /usr/local/lsws/lsphp74/lib/php/20190902/
-      echo "extension=ioncube_loader_lin_7.4.so" >> /usr/local/lsws/lsphp74/etc/php/7.4/mods-available/01-ioncube.ini     
+      echo "zend_extension=ioncube_loader_lin_7.4.so" >> /usr/local/lsws/lsphp74/etc/php/7.4/mods-available/01-ioncube.ini     
       systemctl restart lsws
       echo "ioncube_loader_7.4 sucessfully installed"
 
 elif [  $CURRENT = $d  ];
 then
       cp ioncube/ioncube_loader_lin_8.1.so /usr/local/lsws/lsphp81/lib/php/20210902/
-      echo "extension=ioncube_loader_lin_8.1.so" >> /usr/local/lsws/lsphp81/etc/php/8.1/mods-available/01-ioncube.ini     
+      echo "zend_extension=ioncube_loader_lin_8.1.so" >> /usr/local/lsws/lsphp81/etc/php/8.1/mods-available/01-ioncube.ini     
       systemctl restart lsws
       echo "ioncube_loader_8.1 sucessfully installed"
 
