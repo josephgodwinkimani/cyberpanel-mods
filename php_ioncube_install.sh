@@ -24,7 +24,7 @@ echo "current php version of this system PHP-$CURRENT"
 
 DISTRO=`cat /etc/*-release | grep "^ID=" | grep -E -o "[a-z]\w+"`
 
-echo "$DISTRO"
+echo "Your operating system is $DISTRO"
 
 
 if [  $CURRENT = $a ];
