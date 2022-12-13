@@ -8,12 +8,16 @@ log_info() {
 }
 
 log_info "Remove pure-ftpd ..."
-sudo apt-get autoremove pure-ftpd
-sudo apt-get purge pure-ftpd
-sudo rm -r /etc/pure-ftpd
-sudo killall -u ftpuser
-sudo userdel -f ftpuser
-sudo groupdel ftpgroup
+if pure-ftpd --help | head -1; then
+    sudo apt-get autoremove pure-ftpd -y
+    sudo apt-get purge pure-ftpd -y
+      if ! android-studio --version; then
+        sudo rm -r /etc/pure-ftpd
+      fi
+    sudo killall -u ftpuser
+    sudo userdel -f ftpuser
+    sudo groupdel ftpgroup
+fi
 
 log_info "Install Very secure FTP daemon ..."
 sudo apt install vsftpd
