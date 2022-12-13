@@ -7,14 +7,25 @@ log_info() {
   printf "\n\e[0;35m $1\e[0m\n\n"
 }
 
+log_info "Remove pure-ftpd ..."
+sudo service pure-ftpd stop
+sudo apt-get autoremove pure-ftpd
+sudo apt-get purge pure-ftpd
+sudo rm -r /etc/pure-ftpd
+sudo killall -u ftpuser
+sudo userdel -f ftpuser
+sudo groupdel ftpgroup
+
 log_info "Install Very secure FTP daemon ..."
 sudo apt install vsftpd
 sudo adduser ftpuser
 echo "DenyUsers ftpuser" >> /etc/ssh/sshd_config
 sudo service sshd restart
+
 log_info "Create FTP user ..."
 sudo usermod -d /home ftpuser
 sudo chown ftpuser:ftpuser /home
+
 log_info "Configure Very secure FTP ..."
 sudo mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
 sudo tee /etc/vsftpd.conf <<"EOF"
