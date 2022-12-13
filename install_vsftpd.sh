@@ -29,7 +29,7 @@ log_info "Create FTP user ..."
 sudo addgroup ftpgroup
 sudo usermod -d /home ftpuser
 sudo usermod -g ftpgroup ftpuser
-sudo chown ftpuser:ftpuser /home
+sudo chown -R ftpuser:ftpuser /home
 
 log_info "Configure Very secure FTP ..."
 sudo mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
