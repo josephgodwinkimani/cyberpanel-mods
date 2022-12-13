@@ -34,6 +34,10 @@ sudo apt install acl -y
 setfacl -R -m u:ftpuser:rwx /home
 echo "ftpuser can upload and download any files under /home"
 
+log_info "Install ssl certificate for ftp ..."
+mkdir /etc/ssl/private
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
+
 log_info "Configure Very secure FTP ..."
 sudo mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
 sudo tee /etc/vsftpd.conf <<"EOF"
@@ -54,7 +58,21 @@ force_dot_files=YES
 pasv_min_port=40000
 pasv_max_port=50000
 allow_writeable_chroot=YES
+ssl_enable=YES
+allow_anon_ssl=NO
+force_local_data_ssl=YES
+force_local_logins_ssl=YES
+ssl_tlsv1_1=YES
+ssl_tlsv1_2=YES
+ssl_tlsv1=NO
+ssl_sslv2=NO
+ssl_sslv3=NO
+require_ssl_reuse=YES
+ssl_ciphers=HIGH
+rsa_cert_file=/etc/ssl/certs/vsftpd.crt
+rsa_private_key_file=/etc/ssl/private/vsftpd.key
 EOF
+
 sudo systemctl restart vsftpd
 sudo systemctl status vsftpd
 echo "##########################"
