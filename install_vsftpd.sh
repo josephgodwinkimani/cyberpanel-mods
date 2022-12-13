@@ -8,7 +8,7 @@ log_info() {
 }
 
 log_info "Remove pure-ftpd ..."
-sudo service pure-ftpd stop
+# sudo service pure-ftpd stop
 sudo apt-get autoremove pure-ftpd
 sudo apt-get purge pure-ftpd
 sudo rm -r /etc/pure-ftpd
