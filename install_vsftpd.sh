@@ -30,6 +30,7 @@ sudo addgroup ftpgroup
 sudo usermod -d /home ftpuser
 sudo usermod -g ftpgroup ftpuser
 sudo chown -R ftpuser:ftpuser /home
+echo "ftpuser can upload and download any files under /home"
 
 log_info "Configure Very secure FTP ..."
 sudo mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
