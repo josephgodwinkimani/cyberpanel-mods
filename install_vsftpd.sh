@@ -35,7 +35,6 @@ setfacl -R -m u:ftpuser:rwx /home
 echo "ftpuser can upload and download any files under /home"
 
 log_info "Install ssl certificate for ftp ..."
-mkdir /etc/ssl/private
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
 
 log_info "Configure Very secure FTP ..."
