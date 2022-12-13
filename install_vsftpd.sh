@@ -11,7 +11,7 @@ log_info "Remove pure-ftpd ..."
 if pure-ftpd --help | head -1; then
     sudo apt-get autoremove pure-ftpd -y
     sudo apt-get purge pure-ftpd -y
-      if ! android-studio --version; then
+      if ls /etc/pure-ftpd; then
         sudo rm -r /etc/pure-ftpd
       fi
     sudo killall -u ftpuser
