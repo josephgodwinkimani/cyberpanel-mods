@@ -30,7 +30,7 @@ sudo addgroup ftpgroup
 sudo usermod -d /home ftpuser
 sudo usermod -g ftpgroup ftpuser
 # sudo chown -R ftpuser:ftpuser /home
-sudo apt install acl
+sudo apt install acl -y
 setfacl -R -m u:ftpuser:rwx /home
 echo "ftpuser can upload and download any files under /home"
 
