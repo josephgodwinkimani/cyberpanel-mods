@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+TIMESTAMP=$(date +"%Y-%m-%d")
+
+MYSQL=/usr/bin/mysql
+
+MYSQLDUMP=/usr/bin/mysqldump
+
+echo "RCLONE backup (and encrypt) files to cloud storage"
+
+echo "What is your mysql user with all privileges?"
+read MYSQL_USER
+
+echo "What is your $MYSQL_USER password?"
+read MYSQL_PASSWORD
+
+echo "Where do you want to dump your backup on CyberPanel?"
+read BACKUP_DIR
+
+mkdir -p "$BACKUP_DIR"
+
+$MYSQLDUMP --user=$MYSQL_USER -p$MYSQL_PASSWORD --all-databases | gzip > "$BACKUP_DIR/backup-$TIMESTAMP.sql.gz"
+
+echo ""
+
+echo "Local backup at $BACKUP_DIR/backup-$TIMESTAMP.sql.gz"
