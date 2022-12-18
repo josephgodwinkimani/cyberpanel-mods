@@ -33,4 +33,4 @@ rclone copy --progress --no-traverse "$BACKUP_DIR/backup-$TIMESTAMP.sql.gz" remo
 
 echo ""
 
-echo "Local backup at $BACKUP_DIR, Remote backup at $REMOTE_DIR"
+echo "Local backup at $BACKUP_DIR/backup-$TIMESTAMP.sql.gz, Remote backup at $REMOTE_DIR/backup-$TIMESTAMP.sql.gz"
