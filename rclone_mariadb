@@ -29,7 +29,7 @@ $MYSQLDUMP --user=$MYSQL_USER -p$MYSQL_PASSWORD --all-databases | gzip > "$BACKU
 # If you are only copying a small number of files (or are filtering most of the files) and/or have a large number of files on the destination then 
 # --no-traverse will stop rclone listing the destination and save time.
 
-rclone copy --progress --no-traverse "$BACKUP_DIR/$db.sql.gz" remote:$REMOTE_DIR
+rclone copy --progress --no-traverse "$BACKUP_DIR/backup-$TIMESTAMP.sql.gz" remote:$REMOTE_DIR
 
 echo ""
 
