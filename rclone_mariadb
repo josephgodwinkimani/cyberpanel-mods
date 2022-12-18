@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+TIMESTAMP=$(date +"%Y-%m-%d")
 
 MYSQL=/usr/bin/mysql
 
@@ -21,8 +21,6 @@ echo "Where do you want to dump your backup on Remote? (e.g. backup/dir = remote
 read REMOTE_DIR
 
 mkdir -p "$BACKUP_DIR"
-
-databases=`$MYSQL --user=$MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema)"`
 
 $MYSQLDUMP --user=$MYSQL_USER -p$MYSQL_PASSWORD --all-databases | gzip > "$BACKUP_DIR/backup-$TIMESTAMP.sql.gz"
 
