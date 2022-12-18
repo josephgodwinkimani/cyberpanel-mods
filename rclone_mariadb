@@ -14,7 +14,7 @@ read MYSQL_USER
 echo "What is your $MYSQL_USER password?"
 read MYSQL_PASSWORD
 
-echo "Where do you want to dump your backup on CyberPanel?"
+echo "Where do you want to dump your backup on CyberPanel? (e.g. /home/mydomain.com/public_html/backup)"
 read BACKUP_DIR
 
 echo "Where do you want to dump your backup on Remote? (e.g. backup/dir = remote:backup/dir {remote = MEGA/GDRIVE, backup/dir = directory}) "
