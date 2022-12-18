@@ -6,7 +6,7 @@ MYSQL=/usr/bin/mysql
 
 MYSQLDUMP=/usr/bin/mysqldump
 
-echo "RCLONE backup (and encrypt) files to cloud storage"
+echo "LOCAL Backup"
 
 echo "What is your mysql user with all privileges?"
 read MYSQL_USER
