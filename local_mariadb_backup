@@ -8,13 +8,13 @@ MYSQLDUMP=/usr/bin/mysqldump
 
 echo "LOCAL Backup"
 
-echo "What is your mysql user with all privileges?"
+echo "What is your mysql user with all privileges? (e.g. root)"
 read MYSQL_USER
 
-echo "What is your $MYSQL_USER password?"
+echo "What is your $MYSQL_USER password? (e.g. root password found in /usr/local/CyberCP/CyberCP/settings.py)"
 read MYSQL_PASSWORD
 
-echo "Where do you want to dump your backup on CyberPanel?"
+echo "Where do you want to dump your backup on CyberPanel? (e.g. /home/mydomain.com/public_html/backup)"
 read BACKUP_DIR
 
 mkdir -p "$BACKUP_DIR"
