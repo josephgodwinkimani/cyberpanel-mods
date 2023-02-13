@@ -7,6 +7,13 @@ log_info() {
   printf "\n\e[0;35m $1\e[0m\n\n"
 }
 
+DISTRO=`cat /etc/*-release | grep "^ID=" | grep -E -o "[a-z]\w+"`
+
+if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "almalinux" ]; then
+   echo "Your operating system is $DISTRO"
+   echo "Sorry this is not for you"
+fi
+
 log_info "Remove pure-ftpd ..."
 if pure-ftpd --help | head -1; then
     sudo apt-get autoremove pure-ftpd -y
@@ -19,20 +26,44 @@ if pure-ftpd --help | head -1; then
     sudo groupdel ftpgroup
 fi
 
+log_info "Remove vsftpd ..."
+if vsftpd --help | head -1; then
+    sudo apt-get autoremove vsftpd -y
+    sudo apt-get purge --auto-remove vsftpd -y
+fi
+
 log_info "Install Very secure FTP daemon ..."
+sudo apt update
 sudo apt install vsftpd
-sudo adduser ftpuser
-echo "DenyUsers ftpuser" >> /etc/ssh/sshd_config
-sudo service sshd restart
+sudo systemctl start vsftpd
+sudo systemctl enable vsftpd
+cp /etc/vsftpd.conf  /etc/vsftpd.conf_default
 
 log_info "Create FTP user ..."
+echo "Choose an FTP user? (e.g testuser) "
+read FTP_USER
 sudo addgroup ftpgroup
-sudo usermod -d /home ftpuser
-sudo usermod -g ftpgroup ftpuser
-# sudo chown -R ftpuser:ftpuser /home
+sudo adduser ftpuser
+echo "DenyUsers $FTP_USER" >> /etc/ssh/sshd_config
+sudo service sshd restart
+sudo usermod -d /home $FTP_USER
+sudo usermod -g ftpgroup $FTP_USER
+
+log_info "Change FTP user home directory ..."
+echo "Choose an FTP user home directory? (e.g /home/mydomain.com) "
+echo "This script will not create the directory for you"
+read FTP_USER_HOMEDIR
+# sudo chown -R $FTP_USER:$FTP_USER $FTP_USER_HOMEDIR
 sudo apt install acl -y
-setfacl -R -m u:ftpuser:rwx /home
-echo "ftpuser can upload and download any files under /home"
+setfacl -R -m u:$FTP_USER:rwx $FTP_USER_HOMEDIR
+sudo systemctl restart vsftpd
+echo "$FTP_USER can upload and download any files under $FTP_USER_HOMEDIR"
+
+log_info "Create FTP user password ..."
+echo "Choose an FTP user password for $FTP_USER? (e.g testuserpassword) "
+read FTP_USER_PASSWORD
+sudo passwd $FTP_USER_PASSWORD
+sudo systemctl restart vsftpd
 
 log_info "Install ssl certificate for ftp ..."
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
@@ -51,6 +82,7 @@ use_localtime=YES
 xferlog_enable=YES
 connect_from_port_20=YES
 chroot_local_user=YES
+chroot_list_file=/etc/vsftpd.chroot_list
 secure_chroot_dir=/var/run/vsftpd/empty
 pam_service_name=vsftpd
 force_dot_files=YES
@@ -77,3 +109,4 @@ sudo systemctl status vsftpd
 echo "##########################"
 echo "vsftpd installed successfully"
 echo "##########################"
+echo "Go to /etc/vsftpd.chroot_list and add ftp user line by line to allow access"
