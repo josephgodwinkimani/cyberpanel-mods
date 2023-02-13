@@ -46,13 +46,13 @@ sudo addgroup ftpgroup
 sudo adduser ftpuser
 echo "DenyUsers $FTP_USER" >> /etc/ssh/sshd_config
 sudo service sshd restart
-sudo usermod -d /home $FTP_USER
-sudo usermod -g ftpgroup $FTP_USER
 
 log_info "Change FTP user home directory ..."
 echo "Choose an FTP user home directory? (e.g /home/mydomain.com) "
 echo "This script will not create the directory for you"
 read FTP_USER_HOMEDIR
+sudo usermod -d $FTP_USER_HOMEDIR $FTP_USER
+sudo usermod -g ftpgroup $FTP_USER
 # sudo chown -R $FTP_USER:$FTP_USER $FTP_USER_HOMEDIR
 sudo apt install acl -y
 setfacl -R -m u:$FTP_USER:rwx $FTP_USER_HOMEDIR
