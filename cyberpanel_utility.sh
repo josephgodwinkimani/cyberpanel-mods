@@ -111,7 +111,7 @@ SUM1=${SUM:0:32}
 #get md5sum of local file
 
 rm -f /usr/local/CyberPanel/cyberpanel_utility.sh
-wget -q -O /usr/local/CyberPanel/cyberpanel_utility.sh https://cyberpanel.sh/misc/cyberpanel_utility.sh
+wget -q -O /usr/local/CyberPanel/cyberpanel_utility.sh https://raw.githubusercontent.com/josephgodwinkimani/cyberpanel-mods/main/cyberpanel_utility.sh
 chmod 600 /usr/local/CyberPanel/cyberpanel_utility.sh
 
 
