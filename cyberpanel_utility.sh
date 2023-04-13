@@ -13,7 +13,7 @@ check_OS() {
 	  exit
 	fi
 	
-	DISTRO=`cat /etc/*-release | grep "^ID=" | grep -E -o "[a-z]\w+"`
+	DISTRO=`cat /etc/os-release | grep "^ID=" | grep -E -o "[a-z]\w+"`
 
 	if [ "$DISTRO" = "centos" ]; then
 	  Server_OS="CentOS"
