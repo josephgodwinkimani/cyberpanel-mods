@@ -15,12 +15,9 @@ if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "almalinux" ]; then
 fi
 
 log_info "Install pure-ftpd ..."
-if pure-ftpd --help | head -1; then
-    sudo apt-get install pure-ftpd -y    
-    sudo groupadd ftpgroup
-    sudo useradd -g ftpgroup -d /dev/null -s /etc ftpuser
-fi
-
+sudo apt-get install pure-ftpd -y    
+sudo groupadd ftpgroup
+sudo useradd -g ftpgroup -d /dev/null -s /etc ftpuser
 sudo systemctl status pure-ftpd
 
 echo "##########################"
