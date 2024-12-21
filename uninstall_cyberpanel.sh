@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script is provided as-is, and you use it at your own risk. The authors and contributors disclaim any warranties, express or implied, and are not liable for any damages or losses resulting from the use of this script.
 
 if [ ${EUID} -ne 0 ]; then
   echo "Please run as root or sudo user"
@@ -52,6 +53,8 @@ ask_for_confirmation() {
       ;;
   esac
 }
+
+echo "This script is provided as-is, and you use it at your own risk. The authors and contributors disclaim any warranties, express or implied, and are not liable for any damages or losses resulting from the use of this script."
 
 # Check if SELinux is disabled
 if [ -x "$(command -v sestatus)" ]; then
