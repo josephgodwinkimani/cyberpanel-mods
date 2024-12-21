@@ -16,7 +16,7 @@ detect_os() {
   fi
 
   case $OS_ID in
-    "ubuntu" | "debian")
+    "ubuntu")
       PKG_MANAGER="apt"
       SERVICE_MANAGER="systemctl"
       PURE_FTPD_SERVICE="pure-ftpd"
