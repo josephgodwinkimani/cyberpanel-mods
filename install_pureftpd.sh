@@ -21,7 +21,7 @@ detect_os() {
       SERVICE_MANAGER="systemctl"
       PURE_FTPD_SERVICE="pure-ftpd"
       ;;
-    "centos" | "almalinux" | "rhel" | "fedora")
+    "centos" | "almalinux" | "rhel")
       PKG_MANAGER="dnf"
       SERVICE_MANAGER="systemctl"
       PURE_FTPD_SERVICE="pure-ftpd"
