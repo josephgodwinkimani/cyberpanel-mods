@@ -3,47 +3,80 @@
 trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 
 set -e
+
 log_info() {
   printf "\n\e[0;35m $1\e[0m\n\n"
 }
 
-DISTRO=`cat /etc/*-release | grep "^ID=" | grep -E -o "[a-z]\w+"`
+detect_os() {
+  if [ -f /etc/os-release ]; then
+    OS_ID=$(grep "^ID=" /etc/os-release | cut -d '=' -f 2- | tr -d '"')
+  elif [ -f /etc/*-release ]; then
+    OS_ID=$(cat /etc/*-release | grep "^ID=" | grep -E -o "[a-z]\w+")
+  fi
 
-if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "almalinux" ]; then
-   echo "Your operating system is $DISTRO"
-   echo "Sorry this is not for you"
-fi
+  case $OS_ID in
+    "ubuntu" | "debian")
+      PKG_MANAGER="apt"
+      SERVICE_MANAGER="systemctl"
+      ;;
+    "centos" | "almalinux" | "rhel")
+      PKG_MANAGER="dnf"
+      SERVICE_MANAGER="systemctl"
+      ;;
+    *)
+      echo "Unsupported operating system: $OS_ID"
+      exit 1
+      ;;
+  esac
+}
+
+detect_os
 
 log_info "Remove pure-ftpd ..."
-if pure-ftpd --help | head -1; then
+if command -v pure-ftpd &> /dev/null; then
+  if [ "$PKG_MANAGER" = "apt" ]; then
     sudo apt-get autoremove pure-ftpd -y
     sudo apt-get purge pure-ftpd -y
-      if ls /etc/pure-ftpd; then
-        sudo rm -r /etc/pure-ftpd
-      fi
-    sudo killall -u ftpuser
-    sudo userdel -f ftpuser
-    sudo groupdel ftpgroup
+  elif [ "$PKG_MANAGER" = "dnf" ]; then
+    sudo dnf remove pure-ftpd -y
+  fi
+
+  if [ -d /etc/pure-ftpd ]; then
+    sudo rm -r /etc/pure-ftpd
+  fi
+  sudo killall -u ftpuser
+  sudo userdel -f ftpuser
+  sudo groupdel ftpgroup
 fi
 
 log_info "Remove vsftpd ..."
-if vsftpd --help | head -1; then
+if command -v vsftpd &> /dev/null; then
+  if [ "$PKG_MANAGER" = "apt" ]; then
     sudo apt-get autoremove vsftpd -y
     sudo apt-get purge --auto-remove vsftpd -y
+  elif [ "$PKG_MANAGER" = "dnf" ]; then
+    sudo dnf remove vsftpd -y
+  fi
 fi
 
 log_info "Install Very secure FTP daemon ..."
-sudo apt update
-sudo apt install vsftpd
-sudo systemctl start vsftpd
-sudo systemctl enable vsftpd
+if [ "$PKG_MANAGER" = "apt" ]; then
+  sudo apt update
+  sudo apt install vsftpd
+elif [ "$PKG_MANAGER" = "dnf" ]; then
+  sudo dnf install vsftpd -y
+fi
+
+sudo $SERVICE_MANAGER start vsftpd
+sudo $SERVICE_MANAGER enable vsftpd
 cp /etc/vsftpd.conf  /etc/vsftpd.conf_default
 
 log_info "Create FTP user ..."
 echo "Choose an FTP user? (e.g testuser) "
 read FTP_USER
 sudo addgroup ftpgroup
-sudo adduser ftpuser
+sudo adduser $FTP_USER
 echo "DenyUsers $FTP_USER" >> /etc/ssh/sshd_config
 sudo service sshd restart
 
@@ -54,16 +87,20 @@ read FTP_USER_HOMEDIR
 sudo usermod -d $FTP_USER_HOMEDIR $FTP_USER
 sudo usermod -g ftpgroup $FTP_USER
 # sudo chown -R $FTP_USER:$FTP_USER $FTP_USER_HOMEDIR
-sudo apt install acl -y
+if [ "$PKG_MANAGER" = "apt" ]; then
+  sudo apt install acl -y
+elif [ "$PKG_MANAGER" = "dnf" ]; then
+  sudo dnf install acl -y
+fi
 setfacl -R -m u:$FTP_USER:rwx $FTP_USER_HOMEDIR
-sudo systemctl restart vsftpd
+sudo $SERVICE_MANAGER restart vsftpd
 echo "$FTP_USER can upload and download any files under $FTP_USER_HOMEDIR"
 
 log_info "Create FTP user password ..."
 echo "Choose an FTP user password for $FTP_USER? (e.g testuserpassword) "
 read FTP_USER_PASSWORD
-sudo passwd $FTP_USER_PASSWORD
-sudo systemctl restart vsftpd
+echo "$FTP_USER_PASSWORD" | sudo passwd --stdin $FTP_USER
+sudo $SERVICE_MANAGER restart vsftpd
 
 log_info "Install ssl certificate for ftp ..."
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
@@ -104,8 +141,8 @@ rsa_cert_file=/etc/ssl/certs/vsftpd.crt
 rsa_private_key_file=/etc/ssl/private/vsftpd.key
 EOF
 
-sudo systemctl restart vsftpd
-sudo systemctl status vsftpd
+sudo $SERVICE_MANAGER restart vsftpd
+sudo $SERVICE_MANAGER status vsftpd
 echo "##########################"
 echo "vsftpd installed successfully"
 echo "##########################"
