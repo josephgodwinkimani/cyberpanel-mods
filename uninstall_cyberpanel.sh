@@ -200,6 +200,28 @@ run_command "$command"
 
 run_command "sudo rm -rf /usr/local/lsws"
 
+# Uninstall Postfix
+log_message "Uninstalling Postfix..."
+if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "cent7" ]; then
+  command="yum remove --remove-leaves postfix -y"
+elif [ "$DISTRO" = "cent8" ] || [ "$DISTRO" = "openeuler" ]; then
+  command="dnf remove postfix -y"
+elif [ "$DISTRO" = "ubuntu" ]; then
+  command="DEBIAN_FRONTEND=noninteractive apt purge postfix -y"
+fi
+run_command "$command"
+
+# Uninstall Dovecot
+log_message "Uninstalling Dovecot..."
+if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "cent7" ]; then
+  command="yum remove dovecot dovecot-mysql dovecot-pgsql dovecot-lmtpd dovecot-pigeonhole -y"
+elif [ "$DISTRO" = "cent8" ] || [ "$DISTRO" = "openeuler" ]; then
+  command="dnf remove postfix -y"
+elif [ "$DISTRO" = "ubuntu" ]; then
+  command="DEBIAN_FRONTEND=noninteractive apt remove dovecot-core dovecot-imapd dovecot-pop3d -y"
+fi
+run_command "$command"
+
 # Uninstall LiteSpeed Memcached
 log_message "Uninstalling LiteSpeed Memcached..."
 
@@ -264,28 +286,6 @@ elif [ "$DISTRO" = "ubuntu" ]; then
     run_command "rm -rf /usr/local/lib/lsmcd"
   fi
 fi
-
-# Uninstall Postfix
-log_message "Uninstalling Postfix..."
-if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "cent7" ]; then
-  command="yum remove --remove-leaves postfix -y"
-elif [ "$DISTRO" = "cent8" ] || [ "$DISTRO" = "openeuler" ]; then
-  command="dnf remove postfix -y"
-elif [ "$DISTRO" = "ubuntu" ]; then
-  command="DEBIAN_FRONTEND=noninteractive apt purge postfix -y"
-fi
-run_command "$command"
-
-# Uninstall Dovecot
-log_message "Uninstalling Dovecot..."
-if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "cent7" ]; then
-  command="yum remove dovecot dovecot-mysql dovecot-pgsql dovecot-lmtpd dovecot-pigeonhole -y"
-elif [ "$DISTRO" = "cent8" ] || [ "$DISTRO" = "openeuler" ]; then
-  command="dnf remove postfix -y"
-elif [ "$DISTRO" = "ubuntu" ]; then
-  command="DEBIAN_FRONTEND=noninteractive apt remove dovecot-core dovecot-imapd dovecot-pop3d -y"
-fi
-run_command "$command"
 
 # Uninstall Php
 log_message "Uninstalling Php..."
