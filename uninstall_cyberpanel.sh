@@ -92,6 +92,17 @@ detect_distribution() {
 
 DISTRO=$(detect_distribution)
 
+log_message "Remove Gunicorn files..."
+files_to_remove=(
+    "/etc/systemd/system/gunicorn.service"
+    "/etc/systemd/system/gunicorn.socket"
+    "/etc/tmpfiles.d/gunicorn.conf"
+)
+for file in "${files_to_remove[@]}"; do
+    command="rm -f $file"
+    run_command "$command"
+done
+
 # Uninstall OpenLiteSpeed
 log_message "Uninstalling OpenLiteSpeed..."
 if [ "$DISTRO" = "centos" ] || [ "$DISTRO" = "cent7" ]; then
