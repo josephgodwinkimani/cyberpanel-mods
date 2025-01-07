@@ -191,7 +191,7 @@ esac
 
 # Clean up files and directories  
 log_message "Cleaning up files and directories..."  
-run_command "rm -rf /usr/local/CyberPanel"
+run_command "rm -rf /usr/local/CyberPanel /usr/local/CyberCP"
 
 # Clear all log files in /var/log/ except /var/log/uninstallLogs.txt  
 log_message "Clearing log files in /var/log/ except uninstallLogs.txt..."  
