@@ -8,6 +8,12 @@ Useful bash scripts and files for [cyberpanel](https://github.com/usmannasir/cyb
 sh <(curl https://raw.githubusercontent.com/josephgodwinkimani/cyberpanel-mods/main/script.sh || wget -O - https://raw.githubusercontent.com/josephgodwinkimani/cyberpanel-mods/main/script.sh)
 ```
 
+OR for php scripts
+
+```
+php <(curl -s https://raw.githubusercontent.com/josephgodwinkimani/cyberpanel-mods/main/script.php || wget -O - https://raw.githubusercontent.com/josephgodwinkimani/cyberpanel-mods/main/script.php)
+```
+
 # Disclaimer
 
 The information, software, and any other materials provided in this repository are made available "as is" and "as available" without any warranties of any kind, either express or implied. By using the contents of this repository, you acknowledge that you are doing so at your own risk.
