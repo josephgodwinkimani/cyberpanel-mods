@@ -74,22 +74,6 @@ else
 
   # Install the latest Node.js using n
   sudo n latest
-
-  # Reinstall nodejs using the appropriate package manager
-  case $PKG_MANAGER in
-    "apt")
-      sudo apt update && sudo apt-get install --reinstall nodejs
-      ;;
-    "yum")
-      sudo yum update && sudo yum reinstall nodejs
-      ;;
-    "dnf")
-      sudo dnf update && sudo dnf reinstall nodejs
-      ;;
-  esac
-
-  # Verify the Node.js version after installation
-  node -v
 fi
 
 # Check if 'n' is installed and Node.js is installed, then prompt for version input
