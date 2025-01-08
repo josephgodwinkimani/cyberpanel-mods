@@ -32,6 +32,28 @@ detect_os() {
 # Detect the operating system
 detect_os
 
+# Install Node.js based on the detected package manager
+install_node() {
+  case $PKG_MANAGER in
+    "apt")
+      sudo apt update
+      sudo apt install -y nodejs npm
+      ;;
+    "yum")
+      sudo yum install -y nodejs
+      ;;
+    "dnf")
+      sudo dnf install -y nodejs
+      ;;
+  esac
+
+  # Verify installation
+  echo "Node.js version:"
+  node -v
+  echo "npm version:"
+  npm -v
+}
+
 # Check if Node.js is already installed
 if command -v node &> /dev/null; then
   # Check the installed Node.js version
@@ -39,6 +61,8 @@ if command -v node &> /dev/null; then
   echo "Node.js is already installed. Version: $NODE_VERSION"
 else
   echo "Node.js is not installed. Installing now..."
+
+  install_node
   
   # Clean npm cache if npm is installed
   if command -v npm &> /dev/null; then
