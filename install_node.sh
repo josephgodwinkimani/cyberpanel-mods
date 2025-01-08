@@ -1,5 +1,7 @@
 #!/bin/bash
 # Based on https://community.cyberpanel.net/t/deploy-nodejs-app-doesnnt-work/36389/2
+# This script uses n to manage Node.js versions, allowing for easy installation of specific versions.
+# Using this script you can install as many Node.js versions as you wish.
 
 # Function to detect the operating system
 detect_os() {
@@ -35,32 +37,58 @@ if command -v node &> /dev/null; then
   # Check the installed Node.js version
   NODE_VERSION=$(node -v)
   echo "Node.js is already installed. Version: $NODE_VERSION"
+else
+  echo "Node.js is not installed. Installing now..."
+  
+  # Clean npm cache if npm is installed
+  if command -v npm &> /dev/null; then
+    sudo npm cache clean -f
+  fi
+
+  # Install n globally to manage Node.js versions
+  sudo npm install -g n
+
+  # Install the latest Node.js using n
+  sudo n latest
+
+  # Reinstall nodejs using the appropriate package manager
+  case $PKG_MANAGER in
+    "apt")
+      sudo apt update && sudo apt-get install --reinstall nodejs
+      ;;
+    "yum")
+      sudo yum update && sudo yum reinstall nodejs
+      ;;
+    "dnf")
+      sudo dnf update && sudo dnf reinstall nodejs
+      ;;
+  esac
+
+  # Verify the Node.js version after installation
+  node -v
 fi
 
-# Clean npm cache
-sudo npm cache clean -f
+# Check if 'n' is installed and Node.js is installed, then prompt for version input
+if command -v n &> /dev/null && command -v node &> /dev/null; then
+  read -p "Enter the version of Node.js you want to install (e.g., v16.20.1): " REQUESTED_VERSION
+  
+  # Install the requested version using 'n'
+  echo "Installing Node.js version $REQUESTED_VERSION..."
+  sudo n "$REQUESTED_VERSION"
 
-# Install n globally
-sudo npm install -g n
+  # Verify the installed version
+  INSTALLED_VERSION=$(node -v)
+  echo "Node.js version $INSTALLED_VERSION has been installed."
+fi
 
-# Install the latest Node.js using n
-sudo n latest
+echo "You can run `n` to see Node.js version $NODE_VERSION is installed."
 
-# Reinstall nodejs using the appropriate package manager
-case $PKG_MANAGER in
-  "apt")
-    sudo apt update && sudo apt-get install --reinstall nodejs
-    ;;
-  "yum")
-    sudo yum update && sudo yum reinstall nodejs
-    ;;
-  "dnf")
-    sudo dnf update && sudo dnf reinstall nodejs
-    ;;
-esac
+# Prompt for reboot confirmation
+read -p "Do you want to reboot the system now? (yes/no): " REBOOT_CHOICE
 
-# Verify the Node.js version
-node -v
-
-# Reboot the system
-sudo reboot
+if [[ "$REBOOT_CHOICE" == "yes" ]]; then
+  echo "Rebooting the system..."
+  sudo reboot
+else
+  echo "The system will not be rebooted."
+fi
