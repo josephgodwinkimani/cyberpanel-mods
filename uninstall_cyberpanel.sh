@@ -58,6 +58,23 @@ detect_distribution() {
 
 DISTRO=$(detect_distribution)
 
+# Uninstall LSMCD (LiteSpeed Memcached) if it exists
+log_message "Checking for lsmcd installation..."
+case "$DISTRO" in 
+    centos|cent7) 
+        if rpm -q lsmcd; then 
+            run_command "yum remove lsmcd -y"; 
+        fi ;;
+    cent8|openeuler) 
+        if rpm -q lsmcd; then 
+            run_command "dnf remove lsmcd -y"; 
+        fi ;;
+    ubuntu) 
+        if dpkg -l | grep -q lsmcd; then 
+            run_command "DEBIAN_FRONTEND=noninteractive apt purge lsmcd -y"; 
+        fi ;;
+esac
+
 # Remove Gunicorn files if they exist
 log_message "Removing Gunicorn files..."
 files_to_remove=( "/etc/systemd/system/gunicorn.service" "/etc/systemd/system/gunicorn.socket" "/etc/tmpfiles.d/gunicorn.conf" )
