@@ -14,10 +14,16 @@ MYSQLDUMP=/usr/bin/mysqldump
 # edit me
 MYSQL_USER=root
 
-# edit me
-MYSQL_PASSWORD=""
+# Read MySQL password from the specified file
+MYSQL_PASSWORD=$(< /etc/cyberpanel/mysqlPassword)
 
-# edit me e.g. /home/backup/sql
+# Check if the password was read successfully
+if [[ -z "$MYSQL_PASSWORD" ]]; then
+    echo "Error: Unable to read MySQL password from /etc/cyberpanel/mysqlPassword."
+    exit 1
+fi
+
+# edit me e.g. /home/backups/sql
 BACKUP_DIR=""
 
 $MYSQLDUMP --user=$MYSQL_USER -p$MYSQL_PASSWORD --all-databases | gzip > "$BACKUP_DIR/backup-$TIMESTAMP.sql.gz"
