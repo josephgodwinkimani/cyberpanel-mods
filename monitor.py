@@ -35,7 +35,7 @@ from datetime import datetime
 # Configuration
 ENABLE_EMAIL = False
 ENABLE_DISCORD = True
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1328408563902709884/K9Xf8v6F7NEMNXcHN-7OkfA3YukIK3DVpjLBabHWUUCKosSh_pUo5-8x2O_wDhMncIye"
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/"
 GMAIL_USER = "your-gmail@gmail.com"
 GMAIL_APP_PASSWORD = "your-app-password"
 EMAIL_TO = "your-org-email@domain.com"
