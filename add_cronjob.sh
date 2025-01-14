@@ -7,9 +7,9 @@
 
 # Enter the full path of your script: /root/cyberpanel-mods/monitor.py
 # Enter frequency (in minutes or seconds) or preset (once a day, week, or month): 1
-# Enter day of the week (0-7): *
-# Enter day of the month (1-31): *
-# Enter month of the year (1-12): *
+# Enter day of the week (0-7): 0
+# Enter day of the month (1-31): 1
+# Enter month of the year (1-12): 1
 # Enter the path of the output file (optional): 
 # Cron job added successfully: * * * * * /usr/bin/python3 /root/cyberpanel-mods/monitor.py >/dev/null 2>&1
 
