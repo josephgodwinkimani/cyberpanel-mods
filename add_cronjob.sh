@@ -39,7 +39,6 @@ EOF
     exit 1
 }
 
-# Function to validate input based on type
 validate_input() {
     local input="$1"
     local type="$2"
@@ -53,11 +52,11 @@ validate_input() {
             ;;
         "frequency")
             if [[ "$input" == "once a day" ]]; then
-                frequency="1440"  # 24 hours in minutes
+                frequency="0 0 * * *"  # At midnight every day
             elif [[ "$input" == "once a week" ]]; then
-                frequency="10080" # 7 days in minutes
+                frequency="0 0 * * 0"  # At midnight every Sunday
             elif [[ "$input" == "once a month" ]]; then
-                frequency="43200" # 30 days in minutes (approx)
+                frequency="0 1 1 * *"  # At 1 AM on the first day of every month
             elif ! [[ "$input" =~ ^[0-9]+$ ]]; then
                 echo "Error: Frequency must be a number or a preset (once a day, week, or month)."
                 exit 1
@@ -86,10 +85,8 @@ validate_input() {
     esac
 }
 
-# Prompt user for the path of yout script
 read -p "Enter the full path of your script (Python, PHP, or Bash script e.g. /root/cyberpanel-mods/database_dump.php): " SCRIPT_PATH
 
-# Determine the command to execute based on the file extension and validate input.
 case "$SCRIPT_PATH" in
     *.py) COMMAND="/usr/bin/python3 $SCRIPT_PATH";;
     *.php) COMMAND="/usr/bin/php $SCRIPT_PATH";;
@@ -101,31 +98,37 @@ esac
 
 validate_input "$SCRIPT_PATH" "command"
 
-# Prompt user for frequency
-read -p "Enter frequency (in minutes or seconds) or preset (once a day, week, or month): " frequency_input
+read -p "Enter frequency (in minutes or seconds) or preset (once a day, once a week, or once a month): " frequency_input
+
 validate_input "$frequency_input" "frequency"
 
-if [[ "$frequency_input" -lt 60 ]]; then
-    frequency=$((frequency_input / 60)) # Convert seconds to minutes.
+# If using preset frequencies, skip to output file prompt.
+if [[ "$frequency_input" == "once a day" || "$frequency_input" == "once a week" || "$frequency_input" == "once a month" ]]; then 
+    cron_job="$frequency $COMMAND"
 else 
-    frequency="$frequency_input"
+    if [[ "$frequency_input" =~ ^[0-9]+$ ]] && [[ "$frequency_input" -lt 60 ]]; then
+        # Convert seconds to minutes for cron format.
+        frequency="$((frequency_input / 60)) * * * *" 
+    else 
+        read -p "Enter day of the week (0-7): " day_of_week_input
+        validate_input "$day_of_week_input" "day_of_week"
+
+        read -p "Enter day of the month (1-31): " day_of_month_input
+        validate_input "$day_of_month_input" "day_of_month"
+
+        read -p "Enter month of the year (1-12): " month_input
+        validate_input "$month_input" "month"
+        
+        cron_job="$frequency $month_input $day_of_month_input $day_of_week_input $COMMAND"
+    fi 
 fi
-
-read -p "Enter day of the week (0-7): " day_of_week_input
-validate_input "$day_of_week_input" "day_of_week"
-
-read -p "Enter day of the month (1-31): " day_of_month_input
-validate_input "$day_of_month_input" "day_of_month"
-
-read -p "Enter month of the year (1-12): " month_input
-validate_input "$month_input" "month"
 
 read -p "Enter the path of the output file (optional): " output_file
 
 if [[ -z "$output_file" ]]; then 
-    cron_job="$frequency * * * * $COMMAND >/dev/null 2>&1"
+    cron_job="$cron_job >/dev/null 2>&1"
 else 
-    cron_job="$frequency * * * * $COMMAND >> $output_file 2>&1"
+    cron_job="$cron_job >> $output_file 2>&1"
 fi
 
 (crontab -l; echo "$cron_job") | crontab -
