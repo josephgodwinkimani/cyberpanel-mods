@@ -50,12 +50,14 @@ OUTPUT_DIR = "/var/log/cyberpanel_monitoring"
 ALERT_LOG = os.path.join(OUTPUT_DIR, "alerts.log")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 def log(message, color=""):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     formatted_message = f"{color}[{timestamp}] {message}\033[0m"
     print(formatted_message)
     with open(os.path.join(OUTPUT_DIR, "monitoring.log"), "a") as f:
         f.write(formatted_message + "\n")
+
 
 def validate_config():
     has_error = False
@@ -80,6 +82,7 @@ def validate_config():
         log("Configuration validation failed. Please check settings.", "\033[0;31m")
         exit(1)
 
+
 def send_discord_alert(title, message, priority):
     color = 16711680 if priority == "high" else 15844367
 
@@ -99,6 +102,7 @@ def send_discord_alert(title, message, priority):
     if response.status_code != 204:
         log(f"Discord API response: {response.text}", "\033[0;31m")
 
+
 def send_gmail(subject, message, priority):
     email_content = f"""From: {GMAIL_USER}
 To: {EMAIL_TO}
@@ -112,6 +116,7 @@ Content-Type: text/plain; charset="UTF-8"
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
         server.sendmail(GMAIL_USER, EMAIL_TO, email_content)
+
 
 def send_alert(subject, message, priority):
     formatted_message = f"""
@@ -133,8 +138,10 @@ This is an automated alert from CyberPanel Monitoring System."""
     with open(ALERT_LOG, "a") as f:
         f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {subject}\n")
 
+
 def is_log_empty(log_path):
     return os.path.isfile(log_path) and os.stat(log_path).st_size == 0
+
 
 def check_system_resources():
     log("Checking system resources...", "\033[0;34m")
@@ -190,6 +197,7 @@ def check_system_resources():
             "high",
         )
 
+
 def check_services():
     log("Checking critical services...", "\033[0;34m")
 
@@ -219,6 +227,7 @@ def check_services():
             send_alert(
                 "Service Down Alert!", f"Service {service} is not running!", "high"
             )
+
 
 def check_security():
     log("Checking security...", "\033[0;34m")
@@ -257,6 +266,28 @@ def check_security():
             "high",
         )
 
+    # Look for suspicious processes.
+    suspicious_processes_command = (
+        "ps aux | grep -iE "
+        '"kdevtmpfsi|kinsing|xmrig|xmrigDaemon|xmrigMiner|xmrigMinerd|'
+        "xmrigMinerDaemon|cryptominer|malware|suspicious|xmrigMinerServer|xmrigMinerServerDaemon|"
+        "udiskssd|bash2|\\.network-setup|syshd|atdb|"
+        '/usr/.network-setup/config.json" | grep -v grep'
+    )
+    suspicious_processes_output = (
+        subprocess.check_output(suspicious_processes_command, shell=True)
+        .decode()
+        .strip()
+    )
+
+    if suspicious_processes_output:
+        send_alert(
+            "Security Alert - Suspicious Processes Detected!",
+            f"Detected suspicious processes:\n{suspicious_processes_output}",
+            "high",
+        )
+
+
 def analyze_logs():
     log("Analyzing LiteSpeed logs...", "\033[0;34m")
 
@@ -275,30 +306,37 @@ def analyze_logs():
             # Read the last 1000 lines of the log file into a variable
             with open(log_path) as file:
                 log_content_lines = file.readlines()[-1000:]
-                log_content = ''.join(log_content_lines)
+                log_content = "".join(log_content_lines)
 
                 # Check for errors in access and error logs specifically
-                if ("error" in log_path or "stderr" in log_path) and log_content.strip():
+                if (
+                    "error" in log_path or "stderr" in log_path
+                ) and log_content.strip():
                     send_alert(
                         f"Error Log Analysis for {log_path}!",
                         f"\nRecent errors:\n{log_content}\n",
                         "normal",
                     )
-                elif ("access" in log_path):
+                elif "access" in log_path:
                     # Analyze access logs for high traffic or errors (if applicable)
                     ip_counts = {}
                     for line in log_content.splitlines():
                         ip_address = line.split()[0]
                         ip_counts[ip_address] = ip_counts.get(ip_address, 0) + 1
-                    
-                    high_traffic_ips_sorted = sorted(ip_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-                    high_traffic_ips_reported = '\n'.join([f"{ip}: {count}" for ip, count in high_traffic_ips_sorted])
-                    
+
+                    high_traffic_ips_sorted = sorted(
+                        ip_counts.items(), key=lambda x: x[1], reverse=True
+                    )[:5]
+                    high_traffic_ips_reported = "\n".join(
+                        [f"{ip}: {count}" for ip, count in high_traffic_ips_sorted]
+                    )
+
                     send_alert(
                         f"Access Log Analysis for {log_path}!",
                         f"\nHigh traffic IPs:\n{high_traffic_ips_reported}\n",
                         "normal",
                     )
+
 
 def main():
     log("Starting CyberPanel monitoring system...", "\033[0;32m")
@@ -313,6 +351,7 @@ def main():
 
         log(f"Sleeeping for {CHECK_INTERVAL} seconds...", "\033[0;34m")
         time.sleep(CHECK_INTERVAL)
+
 
 if __name__ == "__main__":
     main()
