@@ -18,12 +18,6 @@ if [ ${EUID} -ne 0 ]; then
     exit 1
 fi
 
-# Display usage information if no arguments are provided
-if [ $# -eq 0 ]; then
-    usage
-fi
-
-# Display usage information
 usage() {
     cat << EOF
 Usage: $0
@@ -106,9 +100,15 @@ validate_input "$frequency_input" "frequency"
 if [[ "$frequency_input" == "once a day" || "$frequency_input" == "once a week" || "$frequency_input" == "once a month" ]]; then 
     cron_job="$frequency $COMMAND"
 else 
-    if [[ "$frequency_input" =~ ^[0-9]+$ ]] && [[ "$frequency_input" -lt 60 ]]; then
-        # Convert seconds to minutes for cron format.
-        frequency="$((frequency_input / 60)) * * * *" 
+    if [[ "$frequency_input" =~ ^[0-9]+$ ]]; then 
+        # Assume input is in minutes; for seconds, divide by 60.
+        if [[ "$frequency_input" -lt 60 ]]; then 
+            cron_job="* * * * * $COMMAND"
+        else 
+            minutes=$((frequency_input % 60))
+            hours=$((frequency_input / 60))
+            cron_job="$minutes $hours * * * $COMMAND"
+        fi 
     else 
         read -p "Enter day of the week (0-7): " day_of_week_input
         validate_input "$day_of_week_input" "day_of_week"
